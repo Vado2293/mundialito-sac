@@ -61,7 +61,7 @@ export default function LoginPage() {
           onClick={handleLogin}
           className="w-full bg-yellow-400 text-black font-bold py-2 rounded"
         >
-          Entrar / Registrarse
+          Entrar
         </button>
       </div>
     </main>
