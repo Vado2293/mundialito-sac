@@ -2,200 +2,420 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { supabase } from "../lib/supabaseClient";
 
 type User = {
   id: string;
   password: string;
   coins: number;
-  collection?: any[];
-  album?: any[];
+
+  collectionCount?: number;
+  albumCount?: number;
 };
 
 export default function AdminPage() {
   const router = useRouter();
-  const [allowed, setAllowed] = useState<boolean | null>(null);
-  const [users, setUsers] = useState<Record<string, User>>({});
-  const [loaded, setLoaded] = useState(false);
 
-   // 🔒 verificar si el usuario actual es admin
+  const [allowed, setAllowed] = useState<boolean | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newUser, setNewUser] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
+  // ==========================
+  // VALIDAR ADMIN
+  // ==========================
   useEffect(() => {
     const currentUserId = localStorage.getItem("currentUserId");
 
-    // cambia "admin" por el ID que quieras que tenga permiso
     if (currentUserId !== "Vado") {
+      router.push("/home");
       setAllowed(false);
-      router.push("/home"); // o "/login"
       return;
     }
-     setAllowed(true);
 
-    const raw = localStorage.getItem("users");
-    if (raw) {
-      setUsers(JSON.parse(raw));
-    }
+    setAllowed(true);
   }, [router]);
 
-  const loadUsers = () => {
-    const raw = localStorage.getItem("users");
-    if (!raw) {
-      setUsers({});
-      return;
-    }
-    setUsers(JSON.parse(raw));
-  };
-
-  const saveUsers = (updated: Record<string, User>) => {
-    setUsers(updated);
-    localStorage.setItem("users", JSON.stringify(updated));
-  };
-
   useEffect(() => {
-    loadUsers();
-    setLoaded(true);
-  }, []);
+    if (allowed) {
+      loadUsers();
+    }
+  }, [allowed]);
 
-  const handleCoinsChange = (id: string, value: string) => {
-    const coins = Number(value) || 0;
-    const updated = { ...users };
-    if (!updated[id]) return;
-    updated[id].coins = coins;
-    saveUsers(updated);
-  };
+  // ==========================
+  // CARGAR USUARIOS
+  // ==========================
+  const loadUsers = async () => {
+  setLoading(true);
 
-  const handlePasswordChange = (id: string, value: string) => {
-    const updated = { ...users };
-    if (!updated[id]) return;
-    updated[id].password = value;
-    saveUsers(updated);
-  };
+  const { data: usersData, error } = await supabase
+    .from("users")
+    .select("*")
+    .order("id");
 
-  const resetUserData = (id: string) => {
-    const updated = { ...users };
-    if (!updated[id]) return;
-    updated[id].collection = [];
-    updated[id].album = [];
-    saveUsers(updated);
-  };
+  if (error) {
+    console.error(error);
+    setLoading(false);
+    return;
+  }
 
-  const restoreAlbum = (id: string) => {
-  // borrar las pegadas de este usuario
-  localStorage.removeItem(`placed-${id}`);
+  const enrichedUsers = await Promise.all(
+    (usersData || []).map(async (user) => {
+      const { count: collectionCount } = await supabase
+        .from("user_cards")
+        .select("*", {
+          count: "exact",
+          head: true,
+        })
+        .eq("user_id", user.id);
 
-  // opcional: limpiar campo album en el objeto user
-  const updated = { ...users };
-  if (!updated[id]) return;
-  updated[id].album = [];
-  saveUsers(updated);
+      const { count: albumCount } = await supabase
+        .from("album_placed")
+        .select("*", {
+          count: "exact",
+          head: true,
+        })
+        .eq("user_id", user.id);
+
+      return {
+        ...user,
+        collectionCount: collectionCount || 0,
+        albumCount: albumCount || 0,
+      };
+    })
+  );
+
+  setUsers(enrichedUsers);
+  setLoading(false);
 };
 
-  const userEntries = Object.entries(users);
+ // ==========================
+  // ACTUALIZAR COINS
 
-   if (allowed === null) {
+const updateCoins = async (
+  userId: string,
+  coins: number
+) => {
+  const { error } = await supabase
+    .from("users")
+    .update({ coins })
+    .eq("id", userId);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  loadUsers();
+};
+
+  // ==========================
+  // crear usuario
+
+const createUser = async () => {
+  if (!newUser || !newPassword) {
+    alert("Complete usuario y contraseña");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("users")
+    .insert({
+      id: newUser,
+      password: newPassword,
+      coins: 0,
+    });
+
+  if (error) {
+    console.error(error);
+    alert(error.message);
+    return;
+  }
+
+  setNewUser("");
+  setNewPassword("");
+
+  await loadUsers();
+};
+  // ==========================
+  // ACTUALIZAR PASSWORD
+  // ==========================
+  const updatePassword = async (
+  userId: string,
+  password: string
+) => {
+  const { error } = await supabase
+    .from("users")
+    .update({ password })
+    .eq("id", userId);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  loadUsers();
+};
+
+  // ==========================
+  // RESETEAR COLECCION
+  // ==========================
+ const resetCollection = async (
+  userId: string
+) => {
+  if (
+    !confirm(
+      `Eliminar todas las cartas de ${userId}?`
+    )
+  ) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("user_cards")
+    .delete()
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  await loadUsers();
+};
+
+  // ==========================
+  // RESTAURAR ALBUM
+  // ==========================
+  const restoreAlbum = async (
+  userId: string
+) => {
+  if (
+    !confirm(
+      `Vaciar álbum de ${userId}?`
+    )
+  ) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("album_placed")
+    .delete()
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  await loadUsers();
+};
+
+  if (allowed === null || loading) {
     return (
       <main className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-        <p>Cargando...</p>
+        Cargando...
       </main>
     );
   }
 
   if (!allowed) {
-    return (
-      <main className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-        <p>No tienes permiso para ver esta página.</p>
-      </main>
-    );
+    return null;
   }
 
-  return (
-    <main className="min-h-screen bg-slate-900 text-white p-8">
-
-         <button
-      
-      onClick={() => {
-      window.location.href = "/home";
-      }}
-      className="mb-4 inline-flex items-center gap-2 text-sm px-3 py-1 rounded-full border border-white/20 text-slate-200 hover:bg-white/10 transition"
-      >
+return (
+  <main className="min-h-screen bg-slate-900 text-white p-8">
+    <button
+      onClick={() => (window.location.href = "/home")}
+      className="mb-6 px-4 py-2 border border-white/20 rounded"
+    >
       ← Volver
-      </button>
+    </button>
 
+    <h1 className="text-3xl font-bold mb-8">
+      Panel Administración
+    </h1>
 
+    {/* CREAR USUARIO */}
+    <div className="mb-8 border border-white/10 rounded-xl p-5 bg-slate-800">
+      <h2 className="font-bold text-xl mb-4">
+        Crear usuario
+      </h2>
 
-      <h1 className="text-3xl font-bold mb-6">Panel de administración</h1>
+      <div className="grid md:grid-cols-3 gap-3">
+        <input
+          value={newUser}
+          onChange={(e) =>
+            setNewUser(e.target.value)
+          }
+          placeholder="Usuario"
+          className="bg-slate-700 rounded px-3 py-2"
+        />
 
-      {!loaded ? (
-        <p>Cargando...</p>
-      ) : userEntries.length === 0 ? (
-        <p className="text-slate-400">
-          No hay usuarios en localStorage todavía.
-        </p>
-      ) : (
-        <div className="space-y-4">
-          {userEntries.map(([id, user]) => (
-            <div
-              key={id}
-              className="border border-white/10 rounded-xl p-4 flex flex-col gap-3 bg-slate-800/60"
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="font-bold text-lg">{user.id}</p>
-                  <p className="text-xs text-slate-400">
-                    Cartas: {user.collection?.length || 0} • Álbum:{" "}
-                    {user.album?.length || 0}
-                  </p>
-                </div>
-                <button
-                  onClick={() => resetUserData(id)}
-                  className="text-xs px-3 py-1 rounded bg-red-500/80 hover:bg-red-600"
-                >
-                  Reset cartas Colección
-                </button>
-              </div>
+        <input
+          value={newPassword}
+          onChange={(e) =>
+            setNewPassword(e.target.value)
+          }
+          placeholder="Contraseña"
+          className="bg-slate-700 rounded px-3 py-2"
+        />
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => restoreAlbum(id)}
-                  className="text-xs px-3 py-1 rounded bg-blue-500/80 hover:bg-blue-600"
-                >
-                  Restaurar álbum
-                </button>
-                
-              </div>
+        <button
+          onClick={createUser}
+          className="bg-green-600 hover:bg-green-700 rounded px-3 py-2"
+        >
+          Crear usuario
+        </button>
+      </div>
+    </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs text-slate-300 mb-1">
-                    Monedas
-                  </label>
-                  <input
-                    type="number"
-                    className="w-full bg-slate-700 rounded px-3 py-2 text-sm"
-                    value={user.coins ?? 0}
-                    onChange={(e) =>
-                      handleCoinsChange(id, e.target.value)
-                    }
-                  />
-                </div>
+    <div className="space-y-4">
+      {users.map((user) => (
+        <UserCard
+          key={user.id}
+          user={user}
+          onCoins={updateCoins}
+          onPassword={updatePassword}
+          onResetCollection={resetCollection}
+          onRestoreAlbum={restoreAlbum}
+        />
+      ))}
+    </div>
+  </main>
+);
+}
 
-                <div>
-                  <label className="block text-xs text-slate-300 mb-1">
-                    Contraseña
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full bg-slate-700 rounded px-3 py-2 text-sm"
-                    value={user.password || ""}
-                    onChange={(e) =>
-                      handlePasswordChange(id, e.target.value)
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
+function UserCard({
+  user,
+  onCoins,
+  onPassword,
+  onResetCollection,
+  onRestoreAlbum,
+}: any) {
+  const [coins, setCoins] = useState(
+    user.coins || 0
+  );
+
+  const [password, setPassword] =
+    useState(
+      user.password || ""
+    );
+
+  return (
+    <div className="bg-slate-800 rounded-xl p-4 border border-white/10">
+      <div className="mb-4">
+        <h2 className="font-bold text-xl">
+          {user.id}
+        </h2>
+
+        <div className="text-sm text-slate-400 mt-2 flex flex-wrap gap-4">
+          <span>
+            📦 Colección:{" "}
+            <strong className="text-white">
+              {user.collectionCount || 0}
+            </strong>
+          </span>
+
+          <span>
+            📘 Álbum:{" "}
+            <strong className="text-white">
+              {user.albumCount || 0}
+            </strong>
+          </span>
+
+          <span>
+            🪙 Monedas:{" "}
+            <strong className="text-white">
+              {user.coins || 0}
+            </strong>
+          </span>
         </div>
-      )}
-    </main>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs mb-1">
+            Monedas
+          </label>
+
+          <input
+            value={coins}
+            type="number"
+            onChange={(e) =>
+              setCoins(
+                Number(e.target.value)
+              )
+            }
+            className="w-full bg-slate-700 px-3 py-2 rounded"
+          />
+
+          <button
+            onClick={() =>
+              onCoins(
+                user.id,
+                coins
+              )
+            }
+            className="mt-2 bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm"
+          >
+            Guardar monedas
+          </button>
+        </div>
+
+        <div>
+          <label className="block text-xs mb-1">
+            Contraseña
+          </label>
+
+          <input
+            value={password}
+            onChange={(e) =>
+              setPassword(
+                e.target.value
+              )
+            }
+            className="w-full bg-slate-700 px-3 py-2 rounded"
+          />
+
+          <button
+            onClick={() =>
+              onPassword(
+                user.id,
+                password
+              )
+            }
+            className="mt-2 bg-yellow-600 hover:bg-yellow-700 px-3 py-2 rounded text-sm"
+          >
+            Guardar contraseña
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-3 mt-5">
+        <button
+          onClick={() =>
+            onResetCollection(
+              user.id
+            )
+          }
+          className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-sm"
+        >
+          Reset colección
+        </button>
+
+        <button
+          onClick={() =>
+            onRestoreAlbum(
+              user.id
+            )
+          }
+          className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-sm"
+        >
+          Restaurar álbum
+        </button>
+      </div>
+    </div>
   );
 }

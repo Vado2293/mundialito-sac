@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { PLAYERS } from "../data/players";
+import { supabase } from "../lib/supabaseClient";
+
 
 /* =========================================================
    ALBUM SHEET (vista normal)
@@ -79,7 +81,7 @@ function AlbumSheet({
               className="relative flex flex-col items-center justify-start"
             >
               {/* SLOT */}
-              <div className="relative w-[110px] h-[100px] sm:w-[130px] sm:h-[190px] md:w-[160px] md:h-[220px] lg:w-[180px] lg:h-[250px] bg-white border-[3px] border-white shadow-2xl overflow-hidden">
+              <div className="relative w-[110px] h-[160px] sm:w-[130px] sm:h-[190px] md:w-[160px] md:h-[220px] lg:w-[180px] lg:h-[250px] bg-white border-[3px] border-white shadow-2xl overflow-hidden">
                 {!placed && (
                   <div className="absolute inset-0 bg-[#e7e7e7] flex flex-col items-center justify-center">
                     <div
@@ -379,7 +381,8 @@ export default function AlbumPage() {
   const [selectedCard, setSelectedCard] = useState<any | null>(null);
   const [showCardModal, setShowCardModal] = useState(false);
 
-  const players = PLAYERS;
+  const [players, setPlayers] = useState<any[]>(PLAYERS);
+
 
   // grupos
   const francia = players.filter((p) => p.country === "Francia");
@@ -433,22 +436,77 @@ export default function AlbumPage() {
       players: extra,
     },
   ];
+  
+      useEffect(() => {
+        async function loadPlayers() {
+          console.log("LOAD PLAYERS useEffect DISPARADO");
 
-  useEffect(() => {
-    const currentUserId = localStorage.getItem("currentUserId");
-    if (!currentUserId) return;
+          const { data, error } = await supabase
+            .from("players")
+            .select("*")
+            .order("id", { ascending: true });
 
-    const users = JSON.parse(localStorage.getItem("users") || "{}");
-    const user = users[currentUserId];
-    if (!user) return;
+          console.log("SUPABASE RESPUESTA:", { data, error });
 
-    setCollection(user.collection || []);
+          if (error) {
+            console.error("Error cargando players:", error);
+            // dejamos players como PLAYERS locales
+            return;
+          }
 
-    const placed = JSON.parse(
-      localStorage.getItem(`placed-${currentUserId}`) || "[]"
-    );
-    setPlacedIds(placed);
-  }, []);
+          if (data && data.length > 0) {
+            console.log("PLAYERS SUPABASE:", data);
+            setPlayers(data);
+          } else {
+            console.log("No hay players en Supabase, usando PLAYERS locales");
+            // NO hacemos setPlayers([]), se quedan los locales
+          }
+        }
+
+        loadPlayers();
+      }, []);
+
+
+      useEffect(() => {
+        async function loadUserProgress() {
+          const currentUserId = localStorage.getItem("currentUserId");
+          if (!currentUserId) return;
+
+          // 1) colección desde user_cards
+          const { data: userCards, error: userCardsError } = await supabase
+            .from("user_cards")
+            .select("player_id")
+            .eq("user_id", currentUserId);
+
+          if (userCardsError) {
+            console.error("Error cargando user_cards:", userCardsError);
+            return;
+          }
+
+          const collectionIds = userCards?.map((r) => r.player_id) || [];
+          // guardamos solo { id } para que ownedIds funcione
+          setCollection(collectionIds.map((id) => ({ id })));
+
+          // 2) cartas ya pegadas
+          const { data: placed, error: placedError } = await supabase
+            .from("album_placed")
+            .select("player_id")
+            .eq("user_id", currentUserId);
+
+          if (placedError) {
+            console.error("Error cargando album_placed:", placedError);
+            return;
+          }
+
+          setPlacedIds(placed?.map((r) => r.player_id) || []);
+        }
+
+        loadUserProgress();
+      }, []);
+
+      
+
+
 
   const ownedIds = useMemo(
     () => collection.map((p) => p.id),
@@ -463,14 +521,47 @@ export default function AlbumPage() {
     [players, ownedIds, placedIds]
   );
 
-  const placeSticker = (playerId: number) => {
-    const currentUserId = localStorage.getItem("currentUserId");
-    if (!currentUserId) return;
+// función que escribe en album_placed
+const placeCard = async (userId: string, playerId: number) => {
+  const { data, error } = await supabase
+    .from("album_placed")
+    .insert({
+      user_id: userId,
+      player_id: playerId,
+    })
+    .select();
 
-    const updated = Array.from(new Set([...placedIds, playerId]));
-    setPlacedIds(updated);
-    localStorage.setItem(`placed-${currentUserId}`, JSON.stringify(updated));
-  };
+  console.log("ALBUM INSERT", {
+    userId,
+    playerId,
+    data,
+    error,
+  });
+
+  if (error) {
+    console.error("Error guardando en album_placed:", error);
+    return false;
+  }
+
+  return true;
+};
+
+const placeSticker = async (playerId: number) => {
+  if (placedIds.includes(playerId)) {
+    return;
+  }
+
+  const currentUserId = localStorage.getItem("currentUserId");
+
+  if (!currentUserId) return;
+
+  const success = await placeCard(currentUserId, playerId);
+
+  if (!success) return;
+
+  setPlacedIds((prev) => [...prev, playerId]);
+};
+
 
   const handlePlaceFromBar = (player: any) => {
     const currentSection = sections[currentSectionIndex];
@@ -578,7 +669,7 @@ const exportPDF = async () => {
             className="h-6 md:h-8 object-contain"
           />
           <h1 className="text-white text-sm md:text-2xl tracking-wide">
-            COLECCION
+            ÁLBUM DIGITAL CC
           </h1>
         </div>
 
@@ -601,10 +692,10 @@ const exportPDF = async () => {
               src="/album/cover.jpg"
               className="absolute inset-0 w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/45" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70" />
+          
+          
             <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
-              <h1 className="text-[36px] sm:text-[60px] md:text-[100px] lg:text-[140px] font-black text-yellow-300 tracking-[0.1em] sm:tracking-[0.15em] text-center drop-shadow-2xl">
+              <h1 className="text-[36px] sm:text-[60px] md:text-[100px] lg:text-[140px] font-black text-emerald-400 tracking-[0.1em] sm:tracking-[0.15em] text-center drop-shadow-2xl">
                 MUNDIALITO
               </h1>
               <p className="text-white tracking-[0.3em] sm:tracking-[0.6em] text-xs sm:text-xl md:text-3xl mt-4 sm:mt-6 text-center">
@@ -834,4 +925,5 @@ const exportPDF = async () => {
         </div>
     </main>
   );
-}
+ }
+

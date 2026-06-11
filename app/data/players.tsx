@@ -1,6 +1,6 @@
 // app/data/players.ts
 
-export type Rarity = "Gold" | "Silver" | "Bronze" | "Legend";
+export type Rarity = "Gold" | "Silver" | "Bronze" | "Legendario";
 
 export interface Player {
   id: number;
@@ -12,7 +12,7 @@ export interface Player {
 }
 
 // Helper para repartir Bronze / Silver / Gold en secuencia
-const rarities: Rarity[] = ["Bronze", "Silver", "Gold","Legend"];
+const rarities: Rarity[] = ["Bronze", "Silver", "Gold","Legendario"];
 
 export const PLAYERS: Player[] = [
   // =======================
@@ -369,7 +369,7 @@ export const PLAYERS: Player[] = [
     name: "Joseph Vado",
     country: "Extra",
     overall: 84,
-    rarity: "Legend",
+    rarity: "Legendario",
     image: "/cards/vado.jpeg",
   },
   {
@@ -377,7 +377,7 @@ export const PLAYERS: Player[] = [
     name: "Cinthya Gómez",
     country: "Extra",
     overall: 82,
-    rarity: "Legend",
+    rarity: "Legendario",
     image: "/cards/cin.jpeg",
   },
   {
@@ -385,7 +385,7 @@ export const PLAYERS: Player[] = [
     name: "Jose Valverde",
     country: "Extra",
     overall: 80,
-    rarity: "Legend",
+    rarity: "Legendario",
     image: "/cards/jose.jpeg",
   },
   {
@@ -393,7 +393,7 @@ export const PLAYERS: Player[] = [
     name: "Keila Gonzales",
     country: "Extra",
     overall: 79,
-    rarity: "Silver",
+    rarity: "Legendario",
     image: "/cards/kei.jpeg",
   },
 
@@ -402,7 +402,7 @@ export const PLAYERS: Player[] = [
     name: "Paula Gonzales",
     country: "Extra",
     overall: 79,
-    rarity: "Legend",
+    rarity: "Legendario",
     image: "/cards/pau.jpeg",
   },
 
@@ -411,10 +411,18 @@ export const PLAYERS: Player[] = [
     name: "Dayanna Gómez",
     country: "Extra",
     overall: 79,
-    rarity: "Legend",
+    rarity: "Legendario",
     image: "/cards/daya.jpeg",
   },
 
+   {
+    id: 47,
+    name: "Monica Espinoza",
+    country: "Extra",
+    overall: 88,
+    rarity: "Legendario",
+    image: "/cards/moni.png",
+  },
 
 
 
