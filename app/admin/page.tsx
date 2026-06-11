@@ -1,8 +1,13 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabaseClient";
+
+
 
 type User = {
   id: string;

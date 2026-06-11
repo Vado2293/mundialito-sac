@@ -5,7 +5,10 @@ import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { PLAYERS } from "../data/players";
 
-const getCurrentUserId = () => localStorage.getItem("currentUserId");
+const getCurrentUserId = () => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("currentUserId");
+};
 
 const PACK_PRICES: Record<string, number> = {
   Bronze: 100,
@@ -88,27 +91,23 @@ export default function Home() {
   /* ---------------- LOAD PLAYERS ---------------- */
 
 useEffect(() => {
+  if (typeof window === "undefined") return;
+
   const loadPlayers = async () => {
-    const { data } = await supabase
-      .from("players")
-      .select("*");
+    try {
+      const { data } = await supabase
+        .from("players")
+        .select("*");
 
-    console.log("PLAYERS:", data);
+      console.log("PLAYERS:", data);
 
-    const legendarios =
-      data?.filter(
-        (p) => p.rarity === "Legendario"
-      ) || [];
-
-    console.log(
-      "LEGENDARIOS:",
-      legendarios.length,
-      legendarios
-    );
-
-    if (data && data.length > 0) {
-      setPlayers(data);
-    } else {
+      if (data && data.length > 0) {
+        setPlayers(data);
+      } else {
+        setPlayers(PLAYERS);
+      }
+    } catch (err) {
+      console.error("Error loading players:", err);
       setPlayers(PLAYERS);
     }
   };
@@ -543,7 +542,7 @@ useEffect(() => {
                 initial={{ scale: 0.5, rotate: -10, opacity: 0 }}
                 animate={{ scale: 1, rotate: 0, opacity: 1 }}
                 transition={{ duration: 0.8 }}
-                className={`relative w-[90vw] max-w-[340px] h-[430px] md:h-[470px] rounded-[36px] overflow-hidden border bg-gradient-to-b from-white/10 to-black ${
+                className={`relative w-[110vw] max-w-[340px] h-[480px] md:h-[470px] rounded-[36px] overflow-hidden border bg-gradient-to-b from-white/10 to-black ${
                   rarityStyles[randomPlayer.rarity as keyof typeof rarityStyles].border
                 } ${
                   rarityStyles[randomPlayer.rarity as keyof typeof rarityStyles].glow
@@ -596,7 +595,7 @@ useEffect(() => {
                 <img
                   src={randomPlayer.image}
                   alt={randomPlayer.name}
-                  className="absolute inset-0 m-auto max-h-[80%] max-w-[80%] object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.5)]"
+                  className="absolute top-[5%] left-1/2 -translate-x-1/2 max-h-[80%] max-w-[80%] object-contain"
                 />
 
                 {/* Footer */}
