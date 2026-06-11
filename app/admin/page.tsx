@@ -54,10 +54,10 @@ export default function AdminPage() {
   const loadUsers = async () => {
   setLoading(true);
 
-  const { data: usersData, error } = await supabase
-    .from("users")
-    .select("*")
-    .order("id");
+ const { data: usersData, error } = await supabase
+  .from("users")
+  .select("*") as any;
+   
 
   if (error) {
     console.error(error);
@@ -66,7 +66,7 @@ export default function AdminPage() {
   }
 
   const enrichedUsers = await Promise.all(
-    (usersData || []).map(async (user) => {
+    (usersData || []).map(async (user: any) => {
       const { count: collectionCount } = await supabase
         .from("user_cards")
         .select("*", {
