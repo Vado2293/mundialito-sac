@@ -390,7 +390,7 @@ export const PLAYERS: Player[] = [
   },
   {
     id: 44,
-    name: "Keila Gonzales",
+    name: "Keila González",
     country: "Extra",
     overall: 79,
     rarity: "Legendario",
@@ -399,7 +399,7 @@ export const PLAYERS: Player[] = [
 
    {
     id: 45,
-    name: "Paula Gonzales",
+    name: "Paula González",
     country: "Extra",
     overall: 79,
     rarity: "Legendario",
@@ -417,7 +417,7 @@ export const PLAYERS: Player[] = [
 
    {
     id: 47,
-    name: "Monica Espinoza",
+    name: "Mónica Espinoza",
     country: "Extra",
     overall: 88,
     rarity: "Legendario",
