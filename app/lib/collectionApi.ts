@@ -16,5 +16,5 @@ export async function getUserCollection(userId: string) {
     .select("player_id");
 
   if (error) throw error;
-  return data?.map((r) => r.player_id) || [];
+  return data?.map((r:any) => r.player_id) || [];
 }

@@ -483,9 +483,9 @@ export default function AlbumPage() {
             return;
           }
 
-          const collectionIds = userCards?.map((r) => r.player_id) || [];
+          const collectionIds = userCards?.map((r:any) => r.player_id) || [];
           // guardamos solo { id } para que ownedIds funcione
-          setCollection(collectionIds.map((id) => ({ id })));
+          setCollection(collectionIds.map((id:any) => ({ id })));
 
           // 2) cartas ya pegadas
           const { data: placed, error: placedError } = await supabase
@@ -498,7 +498,7 @@ export default function AlbumPage() {
             return;
           }
 
-          setPlacedIds(placed?.map((r) => r.player_id) || []);
+          setPlacedIds(placed?.map((r:any) => r.player_id) || []);
         }
 
         loadUserProgress();
