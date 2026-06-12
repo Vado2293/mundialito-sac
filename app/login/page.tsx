@@ -43,7 +43,7 @@ export default function LoginPage() {
         .insert({
           id: userId,
           password: password,
-          coins: 100, // 🔥 bonus inicial
+          coins: 1000, // 🔥 bonus inicial
         })
         .select()
         .single();
