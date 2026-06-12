@@ -56,7 +56,7 @@ export default function AdminPage() {
 
  const { data: usersData, error } = await supabase
   .from("users")
-  .select("*") as any;
+  .select("*");
    
 
   if (error) {
@@ -66,12 +66,12 @@ export default function AdminPage() {
   }
 
   const enrichedUsers = await Promise.all(
-    (usersData || []).map(async (user: any) => {
-      const { count: collectionCount } = await supabase
-        .from("user_cards")
-        .select("*", {
-          count: "exact",
-          head: true,
+     (usersData as any[] || []).map(async (user: any) => {
+    const { count: collectionCount } = await supabase
+      .from("user_cards")
+      .select("*", {
+        count: "exact",
+        head: true,
         })
         .eq("user_id", user.id);
 
