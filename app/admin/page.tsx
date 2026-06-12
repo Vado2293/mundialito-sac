@@ -3,6 +3,7 @@
 export const dynamic = "force-dynamic";
 
 
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../app/lib/supabaseClient";
