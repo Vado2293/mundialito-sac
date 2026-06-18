@@ -66,11 +66,11 @@ export default function SobresPage() {
       }
 
       const byPlayer: Record<string, { cardId: number }[]> = {};
-      (data || []).forEach((row) => {
-        const pid = String(row.player_id);
-        if (!byPlayer[pid]) byPlayer[pid] = [];
-        byPlayer[pid].push({ cardId: row.id as number });
-      });
+        (data || []).forEach((row: any) => {
+          const pid = String(row.player_id);
+          if (!byPlayer[pid]) byPlayer[pid] = [];
+          byPlayer[pid].push({ cardId: row.id as number });
+        });
 
       const repeatedInstances: RepeatedInstance[] = [];
 
