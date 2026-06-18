@@ -184,12 +184,11 @@ export default function SobresPage() {
 
       if (!error) {
         const byPlayer: Record<string, { cardId: number }[]> = {};
-        (data || []).forEach((row) => {
+        (data || []).forEach((row: any) => {
           const pid = String(row.player_id);
           if (!byPlayer[pid]) byPlayer[pid] = [];
           byPlayer[pid].push({ cardId: row.id as number });
         });
-
         const repeatedInstances: RepeatedInstance[] = [];
         Object.entries(byPlayer).forEach(([playerId, rows]) => {
           if (rows.length <= 1) return;
