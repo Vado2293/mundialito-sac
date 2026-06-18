@@ -67,9 +67,10 @@ export default function Navbar() {
             Colección
           </a>
           {/* El link de "Sobres" va a la página principal */}
-          <a href="/" className="hover:text-yellow-300 transition">
-            Sobres
+          <a href="/sobres" className="hover:text-yellow-300 transition">
+            SOBRES
           </a>
+
           <a href="/admin" className="hover:text-yellow-300 transition">
             Admin
           </a>
@@ -163,14 +164,14 @@ export default function Navbar() {
               >
                 Colección
               </a>
-              <a // Cambiado de button a a
-                href="/" // Link a la página principal (Sobres)
+             <a
+                href="/sobres"
                 className="hover:text-yellow-300 transition"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Sobres
               </a>
-              <a
+                            <a
                 href="/admin"
                 className="hover:text-yellow-300 transition"
                 onClick={() => setIsMobileMenuOpen(false)}

@@ -7,7 +7,7 @@ export default function CollectionPage() {
   const [collection, setCollection] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchCollection = async () => {
+ const fetchCollection = async () => {
   setLoading(true);
 
   const currentUserId = localStorage.getItem("currentUserId");
@@ -18,7 +18,7 @@ export default function CollectionPage() {
     return;
   }
 
-  // Cartas del usuario
+  // Cartas del usuario (todas las copias)
   const { data: userCards, error: userCardsError } = await supabase
     .from("user_cards")
     .select(`
@@ -45,17 +45,37 @@ export default function CollectionPage() {
     return;
   }
 
-  const placedIds = (placedCards || []).map(
-    (row: any) => row.player_id
-  );
+  const placedIds = (placedCards || []).map((row: any) => row.player_id);
 
-  const availableCards = (userCards || [])
-    .filter((row: any) => !placedIds.includes(row.player_id))
-    .map((row: any) => row.players);
+  // Contar cuántas copias tiene de cada player_id
+  const byPlayer: Record<string, { player: any; total: number }> = {};
+  (userCards || []).forEach((row: any) => {
+    const pid = String(row.player_id);
+    if (!byPlayer[pid]) {
+      byPlayer[pid] = { player: row.players, total: 0 };
+    }
+    byPlayer[pid].total += 1;
+  });
+
+  // Para cada player_id:
+  // - si está pegado: hay 1 copia en álbum → disponibles = total - 1
+  // - si no está pegado: disponibles = total
+  const availableCards: any[] = [];
+
+  Object.entries(byPlayer).forEach(([pid, info]) => {
+    const isPlaced = placedIds.includes(Number(pid));
+    const availableCount = info.total - (isPlaced ? 1 : 0);
+
+    if (availableCount > 0) {
+      // mostramos la carta en colección (una vez; si quieres mostrar todas las copias, podrías pushear varias)
+      availableCards.push(info.player);
+    }
+  });
 
   setCollection(availableCards);
   setLoading(false);
 };
+
 
 useEffect(() => {
   fetchCollection();

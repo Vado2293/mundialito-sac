@@ -76,7 +76,7 @@ export const PLAYERS: Player[] = [
   },
 
    {
-    id: 50,
+    id: 8,
     name: "Daniela Fernandez",
     country: "Francia",
     overall: 77,
@@ -89,7 +89,7 @@ export const PLAYERS: Player[] = [
   // GRUPO B - ALEMANIA
   // =======================
   {
-    id: 8,
+    id: 9,
     name: "Arianna Ródriguez",
     country: "Alemania",
     overall: 83,
@@ -97,7 +97,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/arianna.jpeg",
   },
   {
-    id: 9,
+    id: 10,
     name: "Paola Torrez",
     country: "Alemania",
     overall: 80,
@@ -105,7 +105,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/paola.jpeg",
   },
   {
-    id: 10,
+    id: 11,
     name: "Daisy Juarez",
     country: "Alemania",
     overall: 79,
@@ -113,7 +113,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/daisy.jpeg",
   },
   {
-    id: 11,
+    id: 12,
     name: "Karol Calvo",
     country: "Alemania",
     overall: 81,
@@ -121,7 +121,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/karol.jpeg",
   },
   {
-    id: 12,
+    id: 13,
     name: "Jimena Montero",
     country: "Alemania",
     overall: 78,
@@ -129,7 +129,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/jimenamontero.jpeg",
   },
   {
-    id: 13,
+    id: 14,
     name: "Mariela Matamoros",
     country: "Alemania",
     overall: 82,
@@ -137,7 +137,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/mariela.jpeg",
   },
   {
-    id: 14,
+    id: 15,
     name: "Sandra Jiménez",
     country: "Alemania",
     overall: 76,
@@ -146,7 +146,7 @@ export const PLAYERS: Player[] = [
   },
   
   {
-    id: 40,
+    id: 16,
     name: "Ricardo Richmond",
     country: "Alemania",
     overall: 76,
@@ -159,7 +159,7 @@ export const PLAYERS: Player[] = [
   // GRUPO C - (PAÍS LO AJUSTAS TÚ)
   // =======================
   {
-    id: 15,
+    id: 17,
     name: "Valeria Vargas",
     country: "Portugal", // TODO: asignar país
     overall: 82,
@@ -167,7 +167,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/valeria.jpeg",
   },
   {
-    id: 16,
+    id: 18,
     name: "Libby Sánchez",
     country: "Portugal", // TODO: asignar país
     overall: 79,
@@ -175,7 +175,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/libby.jpeg",
   },
   {
-    id: 17,
+    id: 19,
     name: "Katherine Leitón",
     country: "Portugal", // TODO: asignar país
     overall: 80,
@@ -183,7 +183,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/katherine.jpeg",
   },
   {
-    id: 18,
+    id: 20,
     name: "Aylin Arcia",
     country: "Portugal", // TODO: asignar país
     overall: 78,
@@ -191,7 +191,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/aylin.jpeg",
   },
   {
-    id: 19,
+    id: 21,
     name: "Marjorie Chavarría",
     country: "Portugal", // TODO: asignar país
     overall: 81,
@@ -200,7 +200,7 @@ export const PLAYERS: Player[] = [
   },
 
   {
-    id: 21,
+    id: 22,
     name: "Andrey Palacios",
     country: "Portugal", // TODO: asignar país
     overall: 79,
@@ -208,7 +208,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/andrey.jpeg",
   },
   {
-    id: 22,
+    id: 23,
     name: "Linneth Morales",
     country: "Portugal", // TODO: asignar país
     overall: 78,
@@ -217,7 +217,7 @@ export const PLAYERS: Player[] = [
   },
 
    {
-    id: 39,
+    id: 24,
     name: "Yuneilyn Zeledón",
     country: "Portugal", // TODO: asignar país
     overall: 78,
@@ -229,7 +229,7 @@ export const PLAYERS: Player[] = [
   // GRUPO D - COLOMBIA
   // =======================
   {
-    id: 23,
+    id: 25,
     name: "Rafael Mora",
     country: "Colombia",
     overall: 84,
@@ -237,7 +237,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/rafael.jpeg",
   },
   {
-    id: 24,
+    id: 26,
     name: "Matías Ceciliano",
     country: "Colombia",
     overall: 82,
@@ -245,7 +245,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/matias.jpeg",
   },
   {
-    id: 25,
+    id: 27,
     name: "Jimena Vega",
     country: "Colombia",
     overall: 80,
@@ -253,7 +253,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/jimena.jpeg",
   },
   {
-    id: 26,
+    id: 28,
     name: "Christian Carvajal",
     country: "Colombia",
     overall: 79,
@@ -261,7 +261,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/christian.jpeg",
   },
   {
-    id: 27,
+    id: 29,
     name: "Victor Rivera",
     country: "Colombia",
     overall: 81,
@@ -269,7 +269,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/victor.jpeg",
   },
   {
-    id: 28,
+    id: 30,
     name: "Cynthia Morales",
     country: "Colombia",
     overall: 77,
@@ -277,7 +277,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/cynthia.jpeg",
   },
   {
-    id: 29,
+    id: 31,
     name: "Leonel Navarro",
     country: "Colombia",
     overall: 79,
@@ -285,7 +285,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/leonel.jpeg",
   },
   {
-    id: 30,
+    id: 32,
     name: "Valerie Fernández",
     country: "Colombia",
     overall: 78,
@@ -297,7 +297,7 @@ export const PLAYERS: Player[] = [
   // GRUPO E - BRASIL
   // =======================
   {
-    id: 31,
+    id: 33,
     name: "Kenneth Fallas",
     country: "Brasil",
     overall: 84,
@@ -305,7 +305,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/kenneth.jpeg",
   },
   {
-    id: 32,
+    id: 34,
     name: "Hillary Campos",
     country: "Brasil",
     overall: 82,
@@ -313,7 +313,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/hillary.jpeg",
   },
   {
-    id: 33,
+    id: 35,
     name: "Allison Sanchéz",
     country: "Brasil",
     overall: 80,
@@ -321,7 +321,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/allison.jpeg",
   },
   {
-    id: 34,
+    id: 36,
     name: "Jaxiry Cantillo",
     country: "Brasil",
     overall: 79,
@@ -329,7 +329,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/jaxiry.jpeg",
   },
   {
-    id: 35,
+    id: 37,
     name: "Gabriel Rivas",
     country: "Brasil",
     overall: 81,
@@ -337,7 +337,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/gabo.jpeg",
   },
   {
-    id: 36,
+    id: 38,
     name: "Megan Bustos",
     country: "Brasil",
     overall: 78,
@@ -345,7 +345,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/megan.jpeg",
   },
   {
-    id: 37,
+    id: 39,
     name: "Melany Montero",
     country: "Brasil",
     overall: 80,
@@ -353,7 +353,7 @@ export const PLAYERS: Player[] = [
     image: "/cards/melany.jpeg",
   },
   {
-    id: 38,
+    id: 40,
     name: "Fanny Madrigal",
     country: "Brasil",
     overall: 79,

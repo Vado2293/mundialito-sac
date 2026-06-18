@@ -310,7 +310,10 @@ useEffect(() => {
           <a href="/coleccion" className="hover:text-yellow-300 transition">
             Colección
           </a>
-          <button className="hover:text-yellow-300 transition">SOBRES</button>
+          <a href="/sobres" className="hover:text-yellow-300 transition">
+            SOBRES
+          </a>
+
           <a href="/admin" className="hover:text-yellow-300 transition">
             Admin
           </a>
@@ -363,9 +366,14 @@ useEffect(() => {
               <a href="/coleccion" className="hover:text-yellow-300 transition" onClick={() => setIsMobileMenuOpen(false)}>
                 Colección
               </a>
-              <button onClick={() => setIsMobileMenuOpen(false)} className="hover:text-yellow-300 transition">
-                Sobres
-              </button>
+              <a
+                  href="/sobres"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="hover:text-yellow-300 transition"
+                >
+                  Sobres
+                </a>
+
               <a href="/admin" className="hover:text-yellow-300 transition" onClick={() => setIsMobileMenuOpen(false)}>
                 Admin
               </a>
@@ -405,7 +413,7 @@ useEffect(() => {
         </motion.div>
       </section>
 
-      {/* SOBRES */}
+   
       <section className="mb-24">
         <h2 className="text-4xl font-black mb-10 tracking-[0.15em]">SOBRES</h2>
 
